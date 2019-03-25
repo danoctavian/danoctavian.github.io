@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Dan Octavian">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://danoctavian.com/img/alexandra-mirghe-709037-unsplash.jpg">
+    <meta property="twitter:image" content="https://danoctavian.com/img/alexandra-mirghe-709037-unsplash.jpg" />
+    
+
+    
+    <meta name="title" content="Thinking in coroutines in Node.js" />
+    <meta property="og:title" content="Thinking in coroutines in Node.js" />
+    <meta property="twitter:title" content="Thinking in coroutines in Node.js" />
+    
+
+    
+    <meta name="description" content="">
+    <meta property="og:description" content="" />
+    <meta property="twitter:description" content="" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Engineer, Backend, Blockchain, Decentralized, Builder">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Thinking in coroutines in Node.js-Dan Octavian blog</title>
+
+    <link rel="canonical" href="/2019/03/26/thinking-coroutines-nodejs/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Dan Octavian</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/alexandra-mirghe-709037-unsplash.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Thinking in coroutines in Node.js</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Dan Octavian
+			 
+			on 
+			Monday, March 25, 2019
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</a>
+<ul>
+<li><a href="#example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</a></li>
+<li><a href="#coroutine-logging">Coroutine logging</a></li>
+<li><a href="#important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</a></li>
+</ul></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</h1>
+
+<p>This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang and Haskell (eg. channels), to build code that is easier to understand and debug.</p>
+
+<blockquote>
+<p>Yeah, I think it’s… for a particular class of application, which is like, if you’re building a server, I can’t imagine using anything other than Go. That said, I think Node’s non-blocking paradigm worked out well for JavaScript, where you don’t have threads. And I think that a lot of the problems with kind of the call-back soup problem, where you have to jump into many anonymous functions to complete what you’re doing has been alleviated these days, with the async keyword, the async feature that’s in Javascript now.
+Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-8-interview-with-ryan-dahl-creator-of-nodejs/">interview</a></p>
+</blockquote>
+
+<p>As recognized by the Node creator himself, the Golang paradigm of using so called &ldquo;goroutines&rdquo; that communicate through Go channels, is deemed superior for high performance servers that handle a very large number of concurrent connections.</p>
+
+<p>I find that reasoning about Node.js code in terms of coroutines at a high level instead of thinking in terms of promises and callbacks yields better quality code. Therefore, we&rsquo;re going to take a look at how we can built on `async/await and &ldquo;borrow&rdquo; ideas from Golang to achieve better readability, code structure and easier debugging.</p>
+
+<h2 id="example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</h2>
+
+<p>Suppose you have a queue of crypto assets to be scanned for the latest USD pricing values, and that the API you are using allows N max concurrent requests (haven&rsquo;t checked the actual rules for the API used here, this supposition is for argument&rsquo;s sake).</p>
+
+<p>Assume the queue is being filled at an arbitrary rate.</p>
+
+<pre><code>const MAX_CONCURRENT_REQUESTS = 3
+
+async function fetchPrices(from, to) {
+  const response = await axios.get(`https://min-api.cryptocompare.com/data/price?extraParams=qiibee&amp;fsym=${from}&amp;tsyms=${to}`)
+  return response.data
+}
+
+const queue = []
+
+function addToQueue(items) {
+  queue.push(...items)
+}
+
+;(async () =&gt; {
+
+  while (true) {
+    const toBeScanned = []
+    let next = queue.pop()
+    while(next &amp;&amp; toBeScanned.length &lt; MAX_CONCURRENT_REQUESTS) {
+      toBeScanned.push(next)
+      next = queue.pop()
+    }
+    if (toBeScanned.length &gt; 0) {
+      await Promise.all(toBeScanned.map(async (target) =&gt; {
+        const prices = await fetchPrices(target.from, target.to)
+        console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+      }))
+    } else {
+      // yield to allow the queue to be filled
+      await new Promise(resolve =&gt; setImmediate(resolve))
+    }
+  }
+})().catch(e =&gt; {
+  console.log(`FATAL: ${e.stack}`)
+  process.exit(1)
+})
+</code></pre>
+
+<p>This solution ensures that no more than <code>MAX_CONCURRENT_REQUESTS</code> are executed at any given time which fulfills the API requirement.</p>
+
+<p>However, there&rsquo;s a few caveats for this solution. One is that it busy-loops and checks the queue continously. A sleep can be added to slightly mitigate that but it slows down the processing by introducing artificial delay.</p>
+
+<p>The other issue is because of the use of <code>Promise.all</code> the loop waits for all requests to finish before proceeding, thus the wait time is that of the slowest requests in the batch before moving forward to pick up another batch. This can be slightly mitigated with a timeout, but nonetheless the queue processing is sub-optimal.</p>
+
+<p>To address these issues we can conceptualize the problem at a high level as a producer-consumer problem. There are 1 or more producers that submit items to be scanned to the queue. Since the API allows <code>MAX_CONCURRENT_REQUESTS</code> we can define <code>N</code> = <code>MAX_CONCURRENT_REQUESTS</code> consumers that consume items from the queue and each processes one item at a time.</p>
+
+<p>This addresses the max concurrent requests restriction. Now in order to address the busy waiting let&rsquo;s assume that the queue has a <code>async read()</code> method in its interface that blocks until items become available and a <code>write()</code>method that allows to write items in the queue. Let&rsquo;s call this type an <code>AsyncChan</code>.</p>
+
+<p>This how the code would look like if we replace the queue array with an instance of asyncChan</p>
+
+<pre><code>
+const asyncChan = new AsyncChan()
+
+function addToQueue(items) {
+  for (let i = 0; i &lt; items.length; i++) {
+    asyncChan.write(items[i])
+  }
+}
+
+;(async () =&gt; {
+  for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
+
+    // launch coroutine
+    ;(async () =&gt; {
+      while (true) {
+        const target = await asyncChan.read()
+        const prices = await fetchPrices(target.from, target.to)
+        console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+      }
+    })()
+  }
+})()
+</code></pre>
+
+<p>The other added bonus of this strategy is that you can implement an error handling and retry strategy around <code>fetchPrices</code> at the level of each coroutine that does not impact the other consumer coroutines.</p>
+
+<p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
+
+<pre><code>class AsyncChan {
+    // private queue Promise&lt;T&gt;[]
+    // private resolverQueue: ((T) =&gt; void)[]
+    constructor() {
+        this.queue = [
+            new Promise(resolve =&gt; {
+                this.resolverQueue = [resolve];
+            })
+        ];
+    }
+
+    async read() {
+        const queueHead = this.queue.shift();
+
+        this.queue.push(
+            new Promise(resolve =&gt; {
+                this.resolverQueue.push(resolve);
+            })
+        );
+        const v = await queueHead;
+
+        return v;
+    }
+
+    write(v) {
+        const resolveHead = this.resolverQueue.shift();
+        resolveHead(v);
+        this.queue.push(
+            new Promise(resolve =&gt; {
+                this.resolverQueue.push(resolve);
+            })
+        );
+    }
+
+    size() {
+        return this.queue.length;
+    }
+}
+</code></pre>
+
+<p>It basically builds up an internal queue of Promises to be resolved once items are fed to the channel through the use of the <code>write()</code> method. When a Promise resolves, it unblocks the coroutine which was blocking on the <code>read()</code> call.</p>
+
+<h2 id="coroutine-logging">Coroutine logging</h2>
+
+<p>To support debugging in production environments, we need good quality logging. The following simple approach yields very readable logs for our &ldquo;coroutines&rdquo;.</p>
+
+<p>Let&rsquo;s assume we have a function</p>
+
+<p><code>runWithCoroutineId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
+where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
+
+<pre><code>;(async () =&gt; {
+  for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
+
+    // launch coroutine
+    log.runWithContinuationId(`consumer${i}`, async () =&gt; {
+      while (true) {
+        log.info(`Looking for work..`)
+        const target = await asyncChan.read()
+        const prices = await fetchPrices(target.from, target.to)
+        console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+        log.info(`Done processing target ${JSON.stringify(target)}`)
+      }
+    })
+  }
+})()
+</code></pre>
+
+<p>This will yield a log looking as such:</p>
+
+<pre><code>info: Looking for work.. {&quot;timestamp&quot;:&quot;2019-03-24 00:21:13&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
+</code></pre>
+
+<pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
+</code></pre>
+
+<p>Which allows you to easily correlated all logs that happened within 1 coroutine. This kind of identifier is common-place in logs</p>
+
+<p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
+
+<pre><code>const winston = require('winston');
+const getNamespace = require('cls-hooked').getNamespace;
+const createNamespace = require('cls-hooked').createNamespace;
+const uuidv4 = require('uuid/v4');
+
+const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f';
+const CONTINUATION_ID_VAR_NAME = 'continuationId';
+
+let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME);
+if (!loggingSession) {
+  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME);
+}
+
+function runWithContinuationId(value, f) {
+  if (!value) {
+    value = uuidv4();       
+  }
+  let returnValue = null
+  loggingSession.run(() =&gt; {
+    loggingSession.set(CONTINUATION_ID_VAR_NAME, value);
+    returnValue = f()
+  })
+  return returnValue
+}
+
+const continuationIdFormat = winston.format((info, opts) =&gt; {
+  const continuationId = loggingSession.get(CONTINUATION_ID_VAR_NAME)
+  info.continuationId = continuationId
+  return info
+})
+
+const logger = winston.createLogger({
+    format: winston.format.combine(winston.format.json(), winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }), continuationIdFormat()),
+    transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }), continuationIdFormat()),
+          level: 'info',
+          handleExceptions: true
+        })
+    ],
+    exitOnError: false
+});
+
+logger.runWithContinuationId = runWithContinuationId
+module.exports = logger;
+</code></pre>
+
+<h2 id="important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</h2>
+
+<p>Let&rsquo;s look at some critical differences between the Node.js coroutines we just described and the Golang goroutines.</p>
+
+<p>It must be noted that the Golang runtime is different from that of Node.js in the sense that it has a user-space M:N scheduler that makes efficient use of multiple CPU cores. It uses OS threads (N threads) on a machine to distribute the goroutines (M goroutines). The goroutines are preemptive which means the scheduler takes care automatically of making sure each gets a fair share of the CPU (Go <a href="https://rakyll.org/scheduler">here</a> for a good summary of that).</p>
+
+<p>A Node.js uses one OS thread to run all events in its event loop. Therefore, it cannot take advantage of using multiple processor cores. Furthermore, our Node.js coroutines are cooperative and not preemptive. There is no scheduler to interrupt code execution, and the routine effectively yields to allow other routines to run only when you call <code>await</code> or when it terminates.</p>
+
+<p>Note how in the first example we used the forced &ldquo;yield&rdquo; to prevent the infinite loop from blocking the node process, implemented as such:</p>
+
+<pre><code>      await new Promise(resolve =&gt; setImmediate(resolve))
+</code></pre>
+
+<p>Thus the problem of overly long CPU-bound tasks that can starve other events from being handled is still present of course.</p>
+
+
+                
+                
+<div class="entry-shang text-center">
+    
+	    <p>「真诚赞赏，手留余香」</p>
+	
+	<button class="zs show-zs btn btn-bred">赞赏支持</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://danoctavian.com"><img src="/img/favicon.png" />Dan Octavian</a></span>
+        
+	        <p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
+		
+ 
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="/img/reward/wechat-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="/img/reward/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="/img/reward/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="/js/reward.js"></script>
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="http://shriphani.com">Shriphani</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Dan Octavian" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:danoctavian91@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/danoctavian">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/dan-octavian-415a6680/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Dan Octavian 2019
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

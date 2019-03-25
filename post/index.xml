@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Dan Octavian</title>
+    <link>https://danoctavian.com/post/</link>
+    <description>Recent content in Posts on Dan Octavian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 25 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://danoctavian.com/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Thinking in coroutines in Node.js</title>
+      <link>https://danoctavian.com/2019/03/26/thinking-coroutines-nodejs/</link>
+      <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://danoctavian.com/2019/03/26/thinking-coroutines-nodejs/</guid>
+      <description>Thinking in coroutines in Node.js This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang and Haskell (eg. channels), to build code that is easier to understand and debug.
+ Yeah, I think it’s… for a particular class of application, which is like, if you’re building a server, I can’t imagine using anything other than Go.</description>
+    </item>
+    
+  </channel>
+</rss>
