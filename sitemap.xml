@@ -3,38 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/</loc>
+    <loc>https://danoctavian.github.io/2019/03/25/thinking-coroutines-nodejs/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://danoctavian.com/top/about/</loc>
+    <loc>https://danoctavian.github.io/top/about/</loc>
   </url>
   
   <url>
-    <loc>https://danoctavian.com/categories/</loc>
+    <loc>https://danoctavian.github.io/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.com/</loc>
-    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://danoctavian.com/post/</loc>
+    <loc>https://danoctavian.github.io/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.com/tags/</loc>
+    <loc>https://danoctavian.github.io/post/</loc>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.com/top/</loc>
+    <loc>https://danoctavian.github.io/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/top/</loc>
     <priority>0</priority>
   </url>
   
