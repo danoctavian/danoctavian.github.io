@@ -300,6 +300,8 @@ function addToQueue(items) {
 
 <p>The other added bonus of this strategy is that you can implement an error handling and retry strategy around <code>fetchPrices</code> at the level of each coroutine that does not impact the other consumer coroutines.</p>
 
+<p>This channel is similar to a blocking Golang channel, where the consumer blocks on <code>read</code> until items are available. (note that the <code>write</code> here is non-blocking)</p>
+
 <p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
 
 <pre><code>class AsyncChan {
