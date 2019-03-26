@@ -378,7 +378,7 @@ where <code>id</code> is the id of the coroutine that will show up in the logs a
 <pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
 </code></pre>
 
-<p>Which allows you to easily correlated all logs that happened within 1 coroutine. This kind of identifier is common-place in logs</p>
+<p>Which allows you to easily correlate all logs that happened within 1 coroutine. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
 
 <p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
 
