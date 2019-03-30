@@ -305,46 +305,47 @@ function addToQueue(items) {
 <p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
 
 <pre><code>class AsyncChan {
-    // private queue Promise&lt;T&gt;[]
+     // private queue Promise&lt;T&gt;[]
     // private resolverQueue: ((T) =&gt; void)[]
+    // accumulatedValues: T[]
     constructor() {
         this.queue = [
             new Promise(resolve =&gt; {
                 this.resolverQueue = [resolve];
             })
         ];
+        this.accumulatedValues = [];
     }
 
     async read() {
-        const queueHead = this.queue.shift();
+        if (this.accumulatedValues.length &gt; 0) {
+          const item = this.accumulatedValues.shift();
+          return item;
+        } else {
+          const queueHead = this.queue.shift();
 
-        this.queue.push(
+          this.queue.push(
             new Promise(resolve =&gt; {
-                this.resolverQueue.push(resolve);
+              this.resolverQueue.push(resolve);
             })
-        );
-        const v = await queueHead;
-
-        return v;
+          );
+          const v = await queueHead;
+          return v;
+        }
     }
 
     write(v) {
-        const resolveHead = this.resolverQueue.shift();
-        resolveHead(v);
-        this.queue.push(
-            new Promise(resolve =&gt; {
-                this.resolverQueue.push(resolve);
-            })
-        );
-    }
-
-    size() {
-        return this.queue.length;
+        if (this.resolverQueue.length &gt; 1) {
+          const resolveHead = this.resolverQueue.shift();
+          resolveHead(v);
+        } else {
+            this.accumulatedValues.push(v);
+        }
     }
 }
 </code></pre>
 
-<p>It basically builds up an internal queue of Promises to be resolved once items are fed to the channel through the use of the <code>write()</code> method. When a Promise resolves, it unblocks the coroutine which was blocking on the <code>read()</code> call.</p>
+<p>It basically builds up an internal queue of Promises to be resolved once items are fed to the channel through the use of the <code>write()</code> method. When a Promise resolves, it unblocks the coroutine which was blocking on the <code>read()</code> call. If there are no consumers blocking for items, the values simply accumulate in an array when calling <code>write()</code>.</p>
 
 <h2 id="coroutine-logging">Coroutine logging</h2>
 
