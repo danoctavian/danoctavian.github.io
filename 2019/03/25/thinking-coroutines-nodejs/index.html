@@ -207,16 +207,40 @@
 
 <h1 id="thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</h1>
 
-<p>This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang and Haskell (eg. channels), to build code that is easier to understand and debug.</p>
-
 <blockquote>
 <p>Yeah, I think it’s… for a particular class of application, which is like, if you’re building a server, I can’t imagine using anything other than Go. That said, I think Node’s non-blocking paradigm worked out well for JavaScript, where you don’t have threads. And I think that a lot of the problems with kind of the call-back soup problem, where you have to jump into many anonymous functions to complete what you’re doing has been alleviated these days, with the async keyword, the async feature that’s in Javascript now.
 Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-8-interview-with-ryan-dahl-creator-of-nodejs/">interview</a></p>
 </blockquote>
 
-<p>As recognized by the Node creator himself, the Golang paradigm of using so called &ldquo;goroutines&rdquo; that communicate through Go channels, is deemed superior for high performance servers that handle a very large number of concurrent connections.</p>
+<p>As recognized by the Node creator himself, the Golang paradigm of using so called <a href="https://tour.golang.org/concurrency/3">goroutines</a> that communicate through Go channels, is deemed superior for high performance servers that handle a very large number of concurrent connections.</p>
 
-<p>I find that reasoning about Node.js code in terms of coroutines at a high level instead of thinking in terms of promises and callbacks yields better quality code. Therefore, we&rsquo;re going to take a look at how we can built on `async/await and &ldquo;borrow&rdquo; ideas from Golang to achieve better readability, code structure and easier debugging.</p>
+<p>This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang, Kotlin and Haskell (eg. channels), to build code that is easier to understand and debug.</p>
+
+<p>We don&rsquo;t need any special library or framework. Under the presumption that we structure our code using <code>async/await</code> syntax, all we need is to simply conceptualize any async function call as running a new coroutine as such:</p>
+
+<pre><code>(async () =&gt; {
+
+	const r = await axios.get('https://www.etherchain.org/api/gasPriceOracle')
+	console.log(`root coroutine Oracle answer: ${r.data.standard}`)
+	;(async () =&gt; {
+		console.log('Running coroutine 0..')
+		const r = axios.get('https://www.etherchain.org/api/gasPriceOracle')
+		console.log(`coroutine 0 Oracle answer: ${r.data.standard}`)
+	})()
+	;(async () =&gt; {
+		console.log('Running coroutine 1..')
+		const r = axios.get('https://www.etherchain.org/api/gasPriceOracle')
+		console.log(`coroutine 1 Oracle answer: ${r.data.standard}`)
+	})()
+})()
+
+</code></pre>
+
+<p>We recognize that calling an async function simply returns a promise, but now the <code>async/await</code> syntax allows us to easily represent in code a set of sequential instructions, be it synchronous or asynchronous, and we can now conceptualize this sequence as one &ldquo;thread&rdquo; of execution, which for the purpose of the article, we will refer to as a coroutine.</p>
+
+<p>The case for structuring your code using coroutines was made by TJ Hollowaychuk before the creation of <code>async/await</code> in an excellent <a href="https://medium.com/@tjholowaychuk/callbacks-vs-coroutines-174f1fe66127">article</a> accompanied by the <a href="https://github.com/tj/co">co</a> library for coroutines built on the generators functionality.</p>
+
+<p>I find that reasoning about and structuring Node.js code in terms of coroutines at a high level instead of thinking in terms of promises and callbacks yields better quality code. Therefore, we&rsquo;re going to take a look at how we can built on `async/await and &ldquo;borrow&rdquo; ideas from Golang to achieve better readability, code structure and easier debugging in production environments with continuation logging.</p>
 
 <h2 id="example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</h2>
 
@@ -270,9 +294,15 @@ function addToQueue(items) {
 
 <p>To address these issues we can conceptualize the problem at a high level as a producer-consumer problem. There are 1 or more producers that submit items to be scanned to the queue. Since the API allows <code>MAX_CONCURRENT_REQUESTS</code> we can define <code>N</code> = <code>MAX_CONCURRENT_REQUESTS</code> consumers that consume items from the queue and each processes one item at a time.</p>
 
-<p>This addresses the max concurrent requests restriction. Now in order to address the busy waiting let&rsquo;s assume that the queue has a <code>async read()</code> method in its interface that blocks until items become available and a <code>write()</code>method that allows to write items in the queue. Let&rsquo;s call this type an <code>AsyncChan</code>.</p>
+<p>This addresses the max concurrent requests restriction. Now in order to address the busy waiting let&rsquo;s assume that the queue has a <code>async read()</code> method in its interface that blocks until items become available and a <code>write()</code>method that allows to write items in the queue. Let&rsquo;s call this type an <code>AsyncChan</code>. Here&rsquo;s a TypeScript interface for that for clarity&rsquo;s sake only.</p>
 
-<p>This how the code would look like if we replace the queue array with an instance of asyncChan</p>
+<pre><code>interface IAsyncChan&lt;T&gt; {
+	write(v: T): void
+	read(): Promise&lt;T&gt;
+}
+</code></pre>
+
+<p>This how the code would look like if we replace the queue array with an instance of <code>AsyncChan</code>.</p>
 
 <pre><code>
 const asyncChan = new AsyncChan()
@@ -300,12 +330,12 @@ function addToQueue(items) {
 
 <p>The other added bonus of this strategy is that you can implement an error handling and retry strategy around <code>fetchPrices</code> at the level of each coroutine that does not impact the other consumer coroutines.</p>
 
-<p>This channel is similar to a blocking Golang channel, where the consumer blocks on <code>read</code> until items are available. (note that the <code>write</code> here is non-blocking)</p>
+<p>This channel is similar to a buffered Golang channel, where the consumer blocks on <code>read</code> until items are available. (note that the <code>write</code> here is non-blocking)</p>
 
 <p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
 
 <pre><code>class AsyncChan {
-     // private queue Promise&lt;T&gt;[]
+    // private queue Promise&lt;T&gt;[]
     // private resolverQueue: ((T) =&gt; void)[]
     // accumulatedValues: T[]
     constructor() {
@@ -353,7 +383,7 @@ function addToQueue(items) {
 
 <p>Let&rsquo;s assume we have a function</p>
 
-<p><code>runWithCoroutineId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
+<p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
 where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
 
 <pre><code>;(async () =&gt; {
@@ -438,7 +468,7 @@ module.exports = logger;
 
 <h2 id="important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</h2>
 
-<p>Let&rsquo;s look at some critical differences between the Node.js coroutines we just described and the Golang goroutines.</p>
+<p>We took a look at Go as an inspiration, but let&rsquo;s look at some critical differences between the Node.js coroutines we just described and the Golang goroutines.</p>
 
 <p>It must be noted that the Golang runtime is different from that of Node.js in the sense that it has a user-space M:N scheduler that makes efficient use of multiple CPU cores. It uses OS threads (N threads) on a machine to distribute the goroutines (M goroutines). The goroutines are preemptive which means the scheduler takes care automatically of making sure each gets a fair share of the CPU (Go <a href="https://rakyll.org/scheduler">here</a> for a good summary of that).</p>
 
@@ -450,6 +480,10 @@ module.exports = logger;
 </code></pre>
 
 <p>Thus the problem of overly long CPU-bound tasks that can starve other events from being handled is still present of course.</p>
+
+<p>Although at first glance the underlying single threaded implementation of Node.js looks inferior because of non-automatic utilization of all cores and the lack of pre-emption (see the funny piece of <a href="http://widgetsandshit.com/teddziuba/2011/10/node-js-is-cancer.html">Ted Dziuba</a>), we can argue in terms of debugging and code simplicity a Node.js process is easier to deal with.</p>
+
+<p>For one, because of lack of pre-emption you can safely assume that a code section that does not perform <code>await</code> will be executed without being interrupted so in case of having to mutate a set of mutable variables, you do not need to concern yourself at all with locking around a critical code section to prevent corrupting the shared mutable structures (an array or linked list for example).</p>
 
 
                 
