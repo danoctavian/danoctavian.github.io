@@ -330,7 +330,7 @@ function addToQueue(items) {
     // launch coroutine
     ;(async () =&gt; {
       while (true) {
-  	   	try {
+        try {
           const target = await asyncChan.read()
           const prices = await fetchPrices(target.from, target.to)
           console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
