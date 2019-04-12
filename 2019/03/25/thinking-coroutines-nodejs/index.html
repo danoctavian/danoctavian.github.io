@@ -197,6 +197,7 @@
 <li><a href="#thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</a>
 <ul>
 <li><a href="#example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</a></li>
+<li><a href="#on-error-handling">On error handling</a></li>
 <li><a href="#coroutine-logging">Coroutine logging</a></li>
 <li><a href="#important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</a></li>
 </ul></li>
@@ -218,21 +219,31 @@ Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-
 
 <p>We don&rsquo;t need any special library or framework. Under the presumption that we structure our code using <code>async/await</code> syntax, all we need is to simply conceptualize any async function call as running a new coroutine as such:</p>
 
-<pre><code>(async () =&gt; {
-
-	const r = await axios.get('https://www.etherchain.org/api/gasPriceOracle')
-	console.log(`root coroutine Oracle answer: ${r.data.standard}`)
-	;(async () =&gt; {
-		console.log('Running coroutine 0..')
-		const r = axios.get('https://www.etherchain.org/api/gasPriceOracle')
-		console.log(`coroutine 0 Oracle answer: ${r.data.standard}`)
-	})()
-	;(async () =&gt; {
-		console.log('Running coroutine 1..')
-		const r = axios.get('https://www.etherchain.org/api/gasPriceOracle')
-		console.log(`coroutine 1 Oracle answer: ${r.data.standard}`)
-	})()
-})()
+<pre><code>const axios = require('axios')
+;(async () =&gt; {
+  const r = await axios.get('https://www.etherchain.org/api/gasPriceOracle')
+  console.log(`root coroutine Oracle answer: ${r.data.standard}`)
+  
+  ;(async () =&gt; {
+    try {
+      console.log('Running coroutine 0..')
+      const r = await axios.get('https://www.etherchain.org/api/gasPriceOracle')
+      console.log(`coroutine 0 Oracle answer: ${r.data.standard}`)
+    } catch (e) {
+      console.log(`coroutine 1 failed with ${e.stack}`)
+    }
+  })()
+  
+  ;(async () =&gt; {
+    try {
+      console.log('Running coroutine 1..')
+      const r = await axios.get('https://www.etherchain.org/api/gasPriceOracle')
+      console.log(`coroutine 1 Oracle answer: ${r.data.standard}`)
+    } catch (e) {
+      console.log(`coroutine 1 failed with ${e.stack}`)
+    }
+  })()
+})().catch(e =&gt; console.log(`root coroutine failed with ${e.stack}`))
 
 </code></pre>
 
@@ -319,9 +330,13 @@ function addToQueue(items) {
     // launch coroutine
     ;(async () =&gt; {
       while (true) {
-        const target = await asyncChan.read()
-        const prices = await fetchPrices(target.from, target.to)
-        console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+  	   	try {
+          const target = await asyncChan.read()
+          const prices = await fetchPrices(target.from, target.to)
+          console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+        } catch (e) {
+          console.log(`Failed to process value with ${e.stack}`)
+        }
       }
     })()
   }
@@ -330,7 +345,7 @@ function addToQueue(items) {
 
 <p>The other added bonus of this strategy is that you can implement an error handling and retry strategy around <code>fetchPrices</code> at the level of each coroutine that does not impact the other consumer coroutines.</p>
 
-<p>This channel is similar to a buffered Golang channel, where the consumer blocks on <code>read</code> until items are available. (note that the <code>write</code> here is non-blocking)</p>
+<p>This channel is similar to a <a href="https://tour.golang.org/concurrency/3">buffered Golang channel</a>, where the consumer blocks on <code>read</code> until items are available (note that the <code>write</code> here is non-blocking, we did not put an upper bound on the buffer for simplicity - in the case the of the Golang buffered channel the <code>write</code> blocks when max buffer capacity is reached)</p>
 
 <p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
 
@@ -377,6 +392,12 @@ function addToQueue(items) {
 
 <p>It basically builds up an internal queue of Promises to be resolved once items are fed to the channel through the use of the <code>write()</code> method. When a Promise resolves, it unblocks the coroutine which was blocking on the <code>read()</code> call. If there are no consumers blocking for items, the values simply accumulate in an array when calling <code>write()</code>.</p>
 
+<h2 id="on-error-handling">On error handling</h2>
+
+<p>Note how the <code>try/catch</code> block is used here to keep the loop going in case failures inside the coroutine (failed values are not retried for simplicity). If we let exceptions bubble up to the top, they will cause a <code>UnhandledPromiseRejectionWarning</code> which is currently <a href="https://nodejs.org/dist/latest-v8.x/docs/api/deprecations.html#deprecations_dep0018_unhandled_promise_rejections">deprecated</a>. Therefore all exceptions inside the coroutines if left uncaught will cause the Node.js process to fail in the future!</p>
+
+<p>Therefore, we must make sure that all errors are caught by using a try catch block or a final <code>.catch()</code> on the return value of the async function call.</p>
+
 <h2 id="coroutine-logging">Coroutine logging</h2>
 
 <p>To support debugging in production environments, we need good quality logging. The following simple approach yields very readable logs for our &ldquo;coroutines&rdquo;.</p>
@@ -392,11 +413,15 @@ where <code>id</code> is the id of the coroutine that will show up in the logs a
     // launch coroutine
     log.runWithContinuationId(`consumer${i}`, async () =&gt; {
       while (true) {
-        log.info(`Looking for work..`)
-        const target = await asyncChan.read()
-        const prices = await fetchPrices(target.from, target.to)
-        console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
-        log.info(`Done processing target ${JSON.stringify(target)}`)
+        try {
+          log.info(`Looking for work..`)
+          const target = await asyncChan.read()
+          const prices = await fetchPrices(target.from, target.to)
+          console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+          log.info(`Done processing target ${JSON.stringify(target)}`)
+        } catch (e) {
+          log.error(`Failed to process value with ${e.stack}`)
+        }
       }
     })
   }
