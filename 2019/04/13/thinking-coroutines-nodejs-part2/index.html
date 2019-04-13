@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Dan Octavian">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://danoctavian.github.io/img/alexandra-mirghe-709037-unsplash.jpg">
+    <meta property="twitter:image" content="https://danoctavian.github.io/img/alexandra-mirghe-709037-unsplash.jpg" />
+    
+
+    
+    <meta name="title" content="Thinking in coroutines in Node.js - Part 2" />
+    <meta property="og:title" content="Thinking in coroutines in Node.js - Part 2" />
+    <meta property="twitter:title" content="Thinking in coroutines in Node.js - Part 2" />
+    
+
+    
+    <meta name="description" content="">
+    <meta property="og:description" content="" />
+    <meta property="twitter:description" content="" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Engineer, Backend, Blockchain, Decentralized, Builder">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Thinking in coroutines in Node.js - Part 2-Dan Octavian blog</title>
+
+    <link rel="canonical" href="/2019/04/13/thinking-coroutines-nodejs-part2/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Dan Octavian</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/alexandra-mirghe-709037-unsplash.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Thinking in coroutines in Node.js - Part 2</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Dan Octavian
+			 
+			on 
+			Saturday, April 13, 2019
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#thinking-in-coroutines-in-node-js-part-2-logging">Thinking in coroutines in Node.js - Part 2: logging</a>
+<ul>
+<li><a href="#general-case">General case</a></li>
+<li><a href="#request-id-logging-in-express">Request id logging in Express</a></li>
+</ul></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="thinking-in-coroutines-in-node-js-part-2-logging">Thinking in coroutines in Node.js - Part 2: logging</h1>
+
+<p>We&rsquo;ve taken a look in [part 1]() at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.</p>
+
+<p>The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same coroutine.</p>
+
+<h2 id="general-case">General case</h2>
+
+<p>Let&rsquo;s assume we have a function</p>
+
+<p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
+where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
+
+<pre><code>;(async () =&gt; {
+  for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
+
+    // launch coroutine
+    log.runWithContinuationId(`consumer${i}`, async () =&gt; {
+      while (true) {
+        try {
+          log.info(`Looking for work..`)
+          const target = await asyncChan.read()
+          const prices = await fetchPrices(target.from, target.to)
+          console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
+          log.info(`Done processing target ${JSON.stringify(target)}`)
+        } catch (e) {
+          log.error(`Failed to process value with ${e.stack}`)
+        }
+      }
+    })
+  }
+})()
+</code></pre>
+
+<p>This will yield a log looking as such:</p>
+
+<pre><code>info: Looking for work.. {&quot;timestamp&quot;:&quot;2019-03-24 00:21:13&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
+</code></pre>
+
+<pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
+</code></pre>
+
+<p>Which allows you to easily correlate all logs that happened within 1 coroutine. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
+
+<p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
+
+<pre><code>const winston = require('winston');
+const getNamespace = require('cls-hooked').getNamespace;
+const createNamespace = require('cls-hooked').createNamespace;
+const uuidv4 = require('uuid/v4');
+
+const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f';
+const CONTINUATION_ID_VAR_NAME = 'continuationId';
+
+let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME);
+if (!loggingSession) {
+  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME);
+}
+
+function runWithContinuationId(value, f) {
+  if (!value) {
+    value = uuidv4();       
+  }
+  let returnValue = null
+  loggingSession.run(() =&gt; {
+    loggingSession.set(CONTINUATION_ID_VAR_NAME, value);
+    returnValue = f()
+  })
+  return returnValue
+}
+
+const continuationIdFormat = winston.format((info, opts) =&gt; {
+  const continuationId = loggingSession.get(CONTINUATION_ID_VAR_NAME)
+  info.continuationId = continuationId
+  return info
+})
+
+const logger = winston.createLogger({
+    format: winston.format.combine(winston.format.json(), winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }), continuationIdFormat()),
+    transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }), continuationIdFormat()),
+          level: 'info',
+          handleExceptions: true
+        })
+    ],
+    exitOnError: false
+});
+
+logger.runWithContinuationId = runWithContinuationId;
+module.exports = logger;
+</code></pre>
+
+<p>The code above makes use of the library</p>
+
+<h2 id="request-id-logging-in-express">Request id logging in Express</h2>
+
+<p>A more specific use case is the logging of a request id for each request handled by your web server, in this case if we are using the Express framework. Because the use case is more specific, we can take a simpler approach as such:</p>
+
+<pre><code>const express = require('express')
+const uuid = require('uuid')
+const httpContext = require('express-http-context')
+const log = require('./logging')
+
+const app = express()
+
+app.use(httpContext.middleware)
+// Run the context for each request. Assign a unique identifier to each request
+app.use((req, res, next) =&gt; {
+  httpContext.set('reqId', uuid.v1())
+  next()
+})
+
+app.use('/hello/:name', async (req, res) =&gt; {
+  log.info(`Responding to hello from ${req.params.name}`)
+  res.json({hello: req.params.name})
+})
+
+const port = 3000
+app.listen(port)
+</code></pre>
+
+<p>This yields a log such as:</p>
+
+<pre><code>info: Responding to hello from dan {&quot;timestamp&quot;:&quot;2019-04-13T07:40:15.889Z&quot;,&quot;reqId&quot;:&quot;60fd9900-5dbf-11e9-a413-5be45196053c&quot;}
+</code></pre>
+
+<p>To achieve this type of logging, we can make use of the <code>express-http-context</code> and <code>winston</code> libraries. Here&rsquo;s the implementation for the local <code>./logging</code> module:</p>
+
+<pre><code>const httpContext = require('express-http-context')
+const winston = require('winston')
+
+const requestIdFormat = winston.format((info, opts) =&gt; {
+  const reqId = httpContext.get('reqId')
+  info.reqId = reqId
+  return info
+})
+
+const logger = winston.createLogger({
+  format: winston.format.combine(winston.format.simple(), winston.format.timestamp(), requestIdFormat()),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.simple(), winston.format.timestamp()),
+      level: 'info',
+      handleExceptions: true
+    })
+  ],
+  exitOnError: false
+})
+
+module.exports = logger;
+</code></pre>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/03/25/thinking-coroutines-nodejs/" data-toggle="tooltip" data-placement="top" title="Thinking in coroutines in Node.js - Part 1">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="http://shriphani.com">Shriphani</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Dan Octavian" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:danoctavian91@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/danoctavian">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/dan-octavian-415a6680/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Dan Octavian 2019
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
