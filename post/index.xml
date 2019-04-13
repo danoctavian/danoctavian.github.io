@@ -17,7 +17,7 @@
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://danoctavian.github.io/2019/04/13/thinking-coroutines-nodejs-part2/</guid>
-      <description>Thinking in coroutines in Node.js - Part 2: logging We&amp;rsquo;ve taken a look in [part 1]() at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.
+      <description>Thinking in coroutines in Node.js - Part 2: logging We&amp;rsquo;ve taken a look in part 1 at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.
 The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same coroutine.</description>
     </item>
     
