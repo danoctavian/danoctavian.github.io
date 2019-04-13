@@ -18,9 +18,9 @@
     
 
     
-    <meta name="title" content="Thinking in coroutines in Node.js" />
-    <meta property="og:title" content="Thinking in coroutines in Node.js" />
-    <meta property="twitter:title" content="Thinking in coroutines in Node.js" />
+    <meta name="title" content="Thinking in coroutines in Node.js - Part 1" />
+    <meta property="og:title" content="Thinking in coroutines in Node.js - Part 1" />
+    <meta property="twitter:title" content="Thinking in coroutines in Node.js - Part 1" />
     
 
     
@@ -37,7 +37,7 @@
     <meta name="keyword"  content="Engineer, Backend, Blockchain, Decentralized, Builder">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Thinking in coroutines in Node.js-Dan Octavian blog</title>
+    <title>Thinking in coroutines in Node.js - Part 1-Dan Octavian blog</title>
 
     <link rel="canonical" href="/2019/03/25/thinking-coroutines-nodejs/">
 
@@ -158,7 +158,7 @@
                     <div class="tags">
                         
                     </div>
-                    <h1>Thinking in coroutines in Node.js</h1>
+                    <h1>Thinking in coroutines in Node.js - Part 1</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
 			Posted by 
@@ -194,11 +194,10 @@
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</a>
+<li><a href="#thinking-in-coroutines-in-node-js-part-1">Thinking in coroutines in Node.js - Part 1</a>
 <ul>
 <li><a href="#example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</a></li>
 <li><a href="#on-error-handling">On error handling</a></li>
-<li><a href="#coroutine-logging">Coroutine logging</a></li>
 <li><a href="#important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</a></li>
 </ul></li>
 </ul>
@@ -206,7 +205,7 @@
                 
                 
 
-<h1 id="thinking-in-coroutines-in-node-js">Thinking in coroutines in Node.js</h1>
+<h1 id="thinking-in-coroutines-in-node-js-part-1">Thinking in coroutines in Node.js - Part 1</h1>
 
 <blockquote>
 <p>Yeah, I think it’s… for a particular class of application, which is like, if you’re building a server, I can’t imagine using anything other than Go. That said, I think Node’s non-blocking paradigm worked out well for JavaScript, where you don’t have threads. And I think that a lot of the problems with kind of the call-back soup problem, where you have to jump into many anonymous functions to complete what you’re doing has been alleviated these days, with the async keyword, the async feature that’s in Javascript now.
@@ -398,99 +397,6 @@ function addToQueue(items) {
 
 <p>Therefore, we must make sure that all errors are caught by using a try catch block or a final <code>.catch()</code> on the return value of the async function call.</p>
 
-<h2 id="coroutine-logging">Coroutine logging</h2>
-
-<p>To support debugging in production environments, we need good quality logging. The following simple approach yields very readable logs for our &ldquo;coroutines&rdquo;.</p>
-
-<p>Let&rsquo;s assume we have a function</p>
-
-<p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
-where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
-
-<pre><code>;(async () =&gt; {
-  for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
-
-    // launch coroutine
-    log.runWithContinuationId(`consumer${i}`, async () =&gt; {
-      while (true) {
-        try {
-          log.info(`Looking for work..`)
-          const target = await asyncChan.read()
-          const prices = await fetchPrices(target.from, target.to)
-          console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
-          log.info(`Done processing target ${JSON.stringify(target)}`)
-        } catch (e) {
-          log.error(`Failed to process value with ${e.stack}`)
-        }
-      }
-    })
-  }
-})()
-</code></pre>
-
-<p>This will yield a log looking as such:</p>
-
-<pre><code>info: Looking for work.. {&quot;timestamp&quot;:&quot;2019-03-24 00:21:13&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
-</code></pre>
-
-<pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
-</code></pre>
-
-<p>Which allows you to easily correlate all logs that happened within 1 coroutine. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
-
-<p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
-
-<pre><code>const winston = require('winston');
-const getNamespace = require('cls-hooked').getNamespace;
-const createNamespace = require('cls-hooked').createNamespace;
-const uuidv4 = require('uuid/v4');
-
-const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f';
-const CONTINUATION_ID_VAR_NAME = 'continuationId';
-
-let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME);
-if (!loggingSession) {
-  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME);
-}
-
-function runWithContinuationId(value, f) {
-  if (!value) {
-    value = uuidv4();       
-  }
-  let returnValue = null
-  loggingSession.run(() =&gt; {
-    loggingSession.set(CONTINUATION_ID_VAR_NAME, value);
-    returnValue = f()
-  })
-  return returnValue
-}
-
-const continuationIdFormat = winston.format((info, opts) =&gt; {
-  const continuationId = loggingSession.get(CONTINUATION_ID_VAR_NAME)
-  info.continuationId = continuationId
-  return info
-})
-
-const logger = winston.createLogger({
-    format: winston.format.combine(winston.format.json(), winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }), continuationIdFormat()),
-    transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss'
-          }), continuationIdFormat()),
-          level: 'info',
-          handleExceptions: true
-        })
-    ],
-    exitOnError: false
-});
-
-logger.runWithContinuationId = runWithContinuationId
-module.exports = logger;
-</code></pre>
-
 <h2 id="important-differences-between-golang-and-node-js">Important differences between Golang and Node.js</h2>
 
 <p>We took a look at Go as an inspiration, but let&rsquo;s look at some critical differences between the Node.js coroutines we just described and the Golang goroutines.</p>
@@ -515,6 +421,11 @@ module.exports = logger;
 
                 <hr>
                 <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/03/25/thinking-coroutines-nodejs/" data-toggle="tooltip" data-placement="top" title="Thinking in coroutines in Node.js - Part 2">&larr;
+                            Previous Post</a>
+                    </li>
                     
                     
                 </ul>
