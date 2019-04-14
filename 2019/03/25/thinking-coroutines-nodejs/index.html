@@ -256,7 +256,7 @@ Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-
 
 <p>Suppose you have a queue of crypto assets to be scanned for the latest USD pricing values, and that the API you are using allows N max concurrent requests (haven&rsquo;t checked the actual rules for the API used here, this supposition is for argument&rsquo;s sake).</p>
 
-<p>Assume the queue is being filled at an arbitrary rate.</p>
+<p>Assume the queue is being filled at an arbitrary rate by the caller of <code>addToQueue</code> which is desired to be non-blocking (eg. it&rsquo;s called as part of an HTTP request handler and wants to return the response as quickly as possible).</p>
 
 <pre><code>const MAX_CONCURRENT_REQUESTS = 3
 
