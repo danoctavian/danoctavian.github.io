@@ -261,7 +261,7 @@ Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-
 <pre><code>const MAX_CONCURRENT_REQUESTS = 3
 
 async function fetchPrices(from, to) {
-  const response = await axios.get(`https://min-api.cryptocompare.com/data/price?extraParams=qiibee&amp;fsym=${from}&amp;tsyms=${to}`)
+  const response = await axios.get(`https://min-api.cryptocompare.com/data/price?fsym=${from}&amp;tsyms=${to}`)
   return response.data
 }
 
