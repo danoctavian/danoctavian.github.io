@@ -217,6 +217,8 @@
 <p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
 where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
 
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineRequestsWithLoggingRun.js">full code here</a></p>
+
 <pre><code>;(async () =&gt; {
   for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
 
@@ -250,26 +252,28 @@ where <code>id</code> is the id of the coroutine that will show up in the logs a
 
 <p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
 
-<pre><code>const winston = require('winston');
-const getNamespace = require('cls-hooked').getNamespace;
-const createNamespace = require('cls-hooked').createNamespace;
-const uuidv4 = require('uuid/v4');
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineLogging.js">full code here</a></p>
 
-const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f';
-const CONTINUATION_ID_VAR_NAME = 'continuationId';
+<pre><code>const winston = require('winston')
+const getNamespace = require('cls-hooked').getNamespace
+const createNamespace = require('cls-hooked').createNamespace
+const uuidv4 = require('uuid/v4')
 
-let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME);
+const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f'
+const CONTINUATION_ID_VAR_NAME = 'continuationId'
+
+let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME)
 if (!loggingSession) {
-  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME);
+  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME)
 }
 
 function runWithContinuationId(value, f) {
   if (!value) {
-    value = uuidv4();       
+    value = uuidv4()
   }
   let returnValue = null
   loggingSession.run(() =&gt; {
-    loggingSession.set(CONTINUATION_ID_VAR_NAME, value);
+    loggingSession.set(CONTINUATION_ID_VAR_NAME, value)
     returnValue = f()
   })
   return returnValue
@@ -282,30 +286,32 @@ const continuationIdFormat = winston.format((info, opts) =&gt; {
 })
 
 const logger = winston.createLogger({
-    format: winston.format.combine(winston.format.json(), winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }), continuationIdFormat()),
-    transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss'
-          }), continuationIdFormat()),
-          level: 'info',
-          handleExceptions: true
-        })
-    ],
-    exitOnError: false
-});
+  format: winston.format.combine(winston.format.json(), winston.format.timestamp({
+    format: 'YYYY-MM-DD HH:mm:ss'
+  }), continuationIdFormat()),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
+        format: 'YYYY-MM-DD HH:mm:ss'
+      }), continuationIdFormat()),
+      level: 'info',
+      handleExceptions: true
+    })
+  ],
+  exitOnError: false
+})
 
-logger.runWithContinuationId = runWithContinuationId;
-module.exports = logger;
+logger.runWithContinuationId = runWithContinuationId
+module.exports = logger
 </code></pre>
 
-<p>The code above makes use of the library</p>
+<p>The code above makes use of the library <a href="https://www.npmjs.com/package/cls-hooked"><code>cls-hooked</code></a> to ensure there is continuation local context passed from caller to callee starting at from the root function called with <code>runWithContinuationId</code>. This is akin to <a href="https://www.baeldung.com/java-threadlocal">ThreadLocal storage in Java</a>.</p>
 
 <h2 id="request-id-logging-in-express">Request id logging in Express</h2>
 
 <p>A more specific use case is the logging of a request id for each request handled by your web server, in this case if we are using the Express framework. Because the use case is more specific, we can take a simpler approach as such:</p>
+
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/expressLoggingDemoRun.js">full code here</a></p>
 
 <pre><code>const express = require('express')
 const uuid = require('uuid')
@@ -337,6 +343,8 @@ app.listen(port)
 
 <p>To achieve this type of logging, we can make use of the <code>express-http-context</code> and <code>winston</code> libraries. Here&rsquo;s the implementation for the local <code>./logging</code> module:</p>
 
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/expressLogging.js">full code here</a></p>
+
 <pre><code>const httpContext = require('express-http-context')
 const winston = require('winston')
 
@@ -358,7 +366,7 @@ const logger = winston.createLogger({
   exitOnError: false
 })
 
-module.exports = logger;
+module.exports = logger
 </code></pre>
 
 

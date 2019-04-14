@@ -214,9 +214,11 @@ Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-
 
 <p>As recognized by the Node creator himself, the Golang paradigm of using so called <a href="https://tour.golang.org/concurrency/3">goroutines</a> that communicate through Go channels, is deemed superior for high performance servers that handle a very large number of concurrent connections.</p>
 
-<p>This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang, Kotlin and Haskell (eg. channels), to build code that is easier to understand and debug.</p>
+<p>This article proposes thinking in terms of coroutines when building node.js applications and potentially using inter-coroutine communication with constructs inspired by those found in Golang, Kotlin and Haskell (eg. channels), to build code that is easier to understand and debug. Supporting full code for this article is provided on <a href="https://github.com/danoctavian/node-coroutine-utils">github</a>.</p>
 
 <p>We don&rsquo;t need any special library or framework. Under the presumption that we structure our code using <code>async/await</code> syntax, all we need is to simply conceptualize any async function call as running a new coroutine as such:</p>
+
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineConceptRun.js">full code here</a></p>
 
 <pre><code>const axios = require('axios')
 ;(async () =&gt; {
@@ -257,6 +259,8 @@ Ryan Dahl <a href="https://mappingthejourney.com/single-post/2017/08/31/episode-
 <p>Suppose you have a queue of crypto assets to be scanned for the latest USD pricing values, and that the API you are using allows N max concurrent requests (haven&rsquo;t checked the actual rules for the API used here, this supposition is for argument&rsquo;s sake).</p>
 
 <p>Assume the queue is being filled at an arbitrary rate by the caller of <code>addToQueue</code> which is desired to be non-blocking (eg. it&rsquo;s called as part of an HTTP request handler and wants to return the response as quickly as possible).</p>
+
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/batchedRequestsAwaitAllRun.js">full code here</a></p>
 
 <pre><code>const MAX_CONCURRENT_REQUESTS = 3
 
@@ -304,22 +308,24 @@ function addToQueue(items) {
 
 <p>To address these issues we can conceptualize the problem at a high level as a producer-consumer problem. There are 1 or more producers that submit items to be scanned to the queue. Since the API allows <code>MAX_CONCURRENT_REQUESTS</code> we can define <code>N</code> = <code>MAX_CONCURRENT_REQUESTS</code> consumers that consume items from the queue and each processes one item at a time.</p>
 
-<p>This addresses the max concurrent requests restriction. Now in order to address the busy waiting let&rsquo;s assume that the queue has a <code>async read()</code> method in its interface that blocks until items become available and a <code>write()</code>method that allows to write items in the queue. Let&rsquo;s call this type an <code>AsyncChan</code>. Here&rsquo;s a TypeScript interface for that for clarity&rsquo;s sake only.</p>
+<p>This addresses the max concurrent requests restriction. Now in order to address the busy waiting let&rsquo;s assume that the queue has a <code>async read()</code> method in its interface that blocks until items become available and a <code>write()</code>method that allows to write items in the queue. Let&rsquo;s call this type an <code>BufferedAsyncChan</code>. Here&rsquo;s a TypeScript interface for that for clarity&rsquo;s sake only.</p>
 
-<pre><code>interface IAsyncChan&lt;T&gt; {
+<pre><code>interface IBufferedAsyncChan&lt;T&gt; {
 	write(v: T): void
 	read(): Promise&lt;T&gt;
 }
 </code></pre>
 
-<p>This how the code would look like if we replace the queue array with an instance of <code>AsyncChan</code>.</p>
+<p>This how the code would look like if we replace the queue array with an instance of <code>BufferedAsyncChan</code>.</p>
+
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineRequestsRun.js">full code here</a></p>
 
 <pre><code>
-const asyncChan = new AsyncChan()
+const bufferedAsyncChan = new BufferedAsyncChan()
 
 function addToQueue(items) {
   for (let i = 0; i &lt; items.length; i++) {
-    asyncChan.write(items[i])
+    bufferedAsyncChan.write(items[i])
   }
 }
 
@@ -330,7 +336,7 @@ function addToQueue(items) {
     ;(async () =&gt; {
       while (true) {
         try {
-          const target = await asyncChan.read()
+          const target = await bufferedAsyncChan.read()
           const prices = await fetchPrices(target.from, target.to)
           console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
         } catch (e) {
@@ -339,53 +345,58 @@ function addToQueue(items) {
       }
     })()
   }
-})()
+})().catch(e =&gt; {
+  console.log(`FATAL: ${e.stack}`)
+  process.exit(1)
+})
 </code></pre>
 
 <p>The other added bonus of this strategy is that you can implement an error handling and retry strategy around <code>fetchPrices</code> at the level of each coroutine that does not impact the other consumer coroutines.</p>
 
 <p>This channel is similar to a <a href="https://tour.golang.org/concurrency/3">buffered Golang channel</a>, where the consumer blocks on <code>read</code> until items are available (note that the <code>write</code> here is non-blocking, we did not put an upper bound on the buffer for simplicity - in the case the of the Golang buffered channel the <code>write</code> blocks when max buffer capacity is reached)</p>
 
-<p>How would you go about implementing <code>AsyncChan</code> ? here is one possible implementation:</p>
+<p>How would you go about implementing <code>BufferedAsyncChan</code> ? here is one possible implementation:</p>
 
-<pre><code>class AsyncChan {
-    // private queue Promise&lt;T&gt;[]
-    // private resolverQueue: ((T) =&gt; void)[]
-    // accumulatedValues: T[]
-    constructor() {
-        this.queue = [
-            new Promise(resolve =&gt; {
-                this.resolverQueue = [resolve];
-            })
-        ];
-        this.accumulatedValues = [];
+<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/src/BufferedAsyncChan.js">full code here</a></p>
+
+<pre><code>class BufferedAsyncChan {
+  // private queue Promise&lt;T&gt;[]
+  // private resolverQueue: ((T) =&gt; void)[]
+  // accumulatedValues: T[]
+  constructor() {
+    this.queue = [
+      new Promise(resolve =&gt; {
+        this.resolverQueue = [resolve]
+      })
+    ];
+    this.accumulatedValues = []
+  }
+
+  async read() {
+    if (this.accumulatedValues.length &gt; 0) {
+      const item = this.accumulatedValues.shift()
+      return item
+    } else {
+      const queueHead = this.queue.shift()
+
+      this.queue.push(
+        new Promise(resolve =&gt; {
+          this.resolverQueue.push(resolve)
+        })
+      )
+      const v = await queueHead
+      return v
     }
+  }
 
-    async read() {
-        if (this.accumulatedValues.length &gt; 0) {
-          const item = this.accumulatedValues.shift();
-          return item;
-        } else {
-          const queueHead = this.queue.shift();
-
-          this.queue.push(
-            new Promise(resolve =&gt; {
-              this.resolverQueue.push(resolve);
-            })
-          );
-          const v = await queueHead;
-          return v;
-        }
+  write(v) {
+    if (this.resolverQueue.length &gt; 1) {
+      const resolveHead = this.resolverQueue.shift()
+      resolveHead(v)
+    } else {
+      this.accumulatedValues.push(v)
     }
-
-    write(v) {
-        if (this.resolverQueue.length &gt; 1) {
-          const resolveHead = this.resolverQueue.shift();
-          resolveHead(v);
-        } else {
-            this.accumulatedValues.push(v);
-        }
-    }
+  }
 }
 </code></pre>
 
