@@ -316,7 +316,7 @@ module.exports = logger
 <pre><code>const express = require('express')
 const uuid = require('uuid')
 const httpContext = require('express-http-context')
-const log = require('./logging')
+const log = require('./expressLogging')
 
 const app = express()
 
@@ -341,7 +341,7 @@ app.listen(port)
 <pre><code>info: Responding to hello from dan {&quot;timestamp&quot;:&quot;2019-04-13T07:40:15.889Z&quot;,&quot;reqId&quot;:&quot;60fd9900-5dbf-11e9-a413-5be45196053c&quot;}
 </code></pre>
 
-<p>To achieve this type of logging, we can make use of the <code>express-http-context</code> and <code>winston</code> libraries. Here&rsquo;s the implementation for the local <code>./logging</code> module:</p>
+<p>To achieve this type of logging, we can make use of the <code>express-http-context</code> and <code>winston</code> libraries. Here&rsquo;s the implementation for the local <code>./expressLogging</code> module:</p>
 
 <p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/expressLogging.js">full code here</a></p>
 
@@ -557,6 +557,19 @@ module.exports = logger
 
 
 
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-138255865-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
