@@ -28,6 +28,18 @@
   </url>
   
   <url>
+    <loc>https://danoctavian.github.io/tags/javascript/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/tags/node.js/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://danoctavian.github.io/post/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -35,11 +47,36 @@
   
   <url>
     <loc>https://danoctavian.github.io/tags/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://danoctavian.github.io/top/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/tags/concurrency/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/tags/coroutine/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/tags/logging/</loc>
+    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.github.io/tags/thread/</loc>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
