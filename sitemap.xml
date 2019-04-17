@@ -3,79 +3,79 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://danoctavian.github.io/2019/04/13/thinking-coroutines-nodejs-part2/</loc>
+    <loc>http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/2019/03/25/thinking-coroutines-nodejs/</loc>
+    <loc>http://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/top/about/</loc>
+    <loc>http://danoctavian.com/top/about/</loc>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/categories/</loc>
+    <loc>http://danoctavian.com/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/</loc>
+    <loc>http://danoctavian.com/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/javascript/</loc>
+    <loc>http://danoctavian.com/tags/javascript/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/node.js/</loc>
+    <loc>http://danoctavian.com/tags/node.js/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/post/</loc>
+    <loc>http://danoctavian.com/post/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/</loc>
+    <loc>http://danoctavian.com/tags/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/top/</loc>
+    <loc>http://danoctavian.com/top/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/concurrency/</loc>
+    <loc>http://danoctavian.com/tags/concurrency/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/coroutine/</loc>
+    <loc>http://danoctavian.com/tags/coroutine/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/logging/</loc>
+    <loc>http://danoctavian.com/tags/logging/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://danoctavian.github.io/tags/thread/</loc>
+    <loc>http://danoctavian.com/tags/thread/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tops on Dan Octavian</title>
-    <link>https://danoctavian.github.io/top/</link>
+    <link>http://danoctavian.com/top/</link>
     <description>Recent content in Tops on Dan Octavian</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://danoctavian.github.io/top/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://danoctavian.com/top/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title></title>
-      <link>https://danoctavian.github.io/top/about/</link>
+      <link>http://danoctavian.com/top/about/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://danoctavian.github.io/top/about/</guid>
+      <guid>http://danoctavian.com/top/about/</guid>
       <description> About me Enjoy building things.
  Nothing strengthens authority so much as silence. - Leonardo da Vinci
  </description>
