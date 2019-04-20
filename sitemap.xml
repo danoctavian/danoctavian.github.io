@@ -3,79 +3,79 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</loc>
+    <loc>https://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/</loc>
+    <loc>https://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/top/about/</loc>
+    <loc>https://danoctavian.com/top/about/</loc>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/categories/</loc>
+    <loc>https://danoctavian.com/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/</loc>
+    <loc>https://danoctavian.com/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/javascript/</loc>
+    <loc>https://danoctavian.com/tags/javascript/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/node.js/</loc>
+    <loc>https://danoctavian.com/tags/node.js/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/post/</loc>
+    <loc>https://danoctavian.com/post/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/</loc>
+    <loc>https://danoctavian.com/tags/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/top/</loc>
+    <loc>https://danoctavian.com/top/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/concurrency/</loc>
+    <loc>https://danoctavian.com/tags/concurrency/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/coroutine/</loc>
+    <loc>https://danoctavian.com/tags/coroutine/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/logging/</loc>
+    <loc>https://danoctavian.com/tags/logging/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://danoctavian.com/tags/thread/</loc>
+    <loc>https://danoctavian.com/tags/thread/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>logging on Dan Octavian</title>
-    <link>http://danoctavian.com/tags/logging/</link>
+    <link>https://danoctavian.com/tags/logging/</link>
     <description>Recent content in logging on Dan Octavian</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 13 Apr 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://danoctavian.com/tags/logging/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://danoctavian.com/tags/logging/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Thinking in coroutines in Node.js - Part 2</title>
-      <link>http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</link>
+      <link>https://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</guid>
+      <guid>https://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</guid>
       <description>Thinking in coroutines in Node.js - Part 2: logging We&amp;rsquo;ve taken a look in part 1 at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.
 The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same coroutine.</description>
     </item>

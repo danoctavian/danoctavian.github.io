@@ -2,66 +2,66 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Dan Octavian</title>
-    <link>http://danoctavian.com/tags/</link>
+    <link>https://danoctavian.com/tags/</link>
     <description>Recent content in Tags on Dan Octavian</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 13 Apr 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://danoctavian.com/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://danoctavian.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Javascript</title>
-      <link>http://danoctavian.com/tags/javascript/</link>
+      <link>https://danoctavian.com/tags/javascript/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/javascript/</guid>
+      <guid>https://danoctavian.com/tags/javascript/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Node.js</title>
-      <link>http://danoctavian.com/tags/node.js/</link>
+      <link>https://danoctavian.com/tags/node.js/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/node.js/</guid>
+      <guid>https://danoctavian.com/tags/node.js/</guid>
       <description></description>
     </item>
     
     <item>
       <title>concurrency</title>
-      <link>http://danoctavian.com/tags/concurrency/</link>
+      <link>https://danoctavian.com/tags/concurrency/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/concurrency/</guid>
+      <guid>https://danoctavian.com/tags/concurrency/</guid>
       <description></description>
     </item>
     
     <item>
       <title>coroutine</title>
-      <link>http://danoctavian.com/tags/coroutine/</link>
+      <link>https://danoctavian.com/tags/coroutine/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/coroutine/</guid>
+      <guid>https://danoctavian.com/tags/coroutine/</guid>
       <description></description>
     </item>
     
     <item>
       <title>logging</title>
-      <link>http://danoctavian.com/tags/logging/</link>
+      <link>https://danoctavian.com/tags/logging/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/logging/</guid>
+      <guid>https://danoctavian.com/tags/logging/</guid>
       <description></description>
     </item>
     
     <item>
       <title>thread</title>
-      <link>http://danoctavian.com/tags/thread/</link>
+      <link>https://danoctavian.com/tags/thread/</link>
       <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://danoctavian.com/tags/thread/</guid>
+      <guid>https://danoctavian.com/tags/thread/</guid>
       <description></description>
     </item>
     
