@@ -272,7 +272,7 @@
 
 <p>The case for structuring your code using coroutines was made by TJ Hollowaychuk before the creation of <code>async/await</code> in an excellent <a href="https://medium.com/@tjholowaychuk/callbacks-vs-coroutines-174f1fe66127">article</a> accompanied by the <a href="https://github.com/tj/co">co</a> library for coroutines built on the generators functionality.</p>
 
-<p>I find that reasoning about and structuring Node.js code in terms of coroutines at a high level instead of thinking in terms of promises and callbacks yields better quality code. Therefore, we&rsquo;re going to take a look at how we can built on `async/await and &ldquo;borrow&rdquo; ideas from Golang to achieve better readability, code structure and easier debugging in production environments with <a href="http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/">continuation logging</a>.</p>
+<p>I find that reasoning about and structuring Node.js code in terms of coroutines at a high level instead of thinking in terms of promises and callbacks yields better quality code. Therefore, we&rsquo;re going to take a look at how we can built on `async/await and &ldquo;borrow&rdquo; ideas from Golang to achieve better readability, code structure and easier debugging in production environments with <a href="http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/">continuation logging</a> which we will analyze in <a href="http://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/">the second part of this article</a>.</p>
 
 <h2 id="example-use-case-max-n-concurrent-actions">Example use case: max N concurrent actions</h2>
 
