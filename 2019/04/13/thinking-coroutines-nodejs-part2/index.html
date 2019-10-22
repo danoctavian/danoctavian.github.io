@@ -18,9 +18,9 @@
     
 
     
-    <meta name="title" content="Thinking in coroutines in Node.js - Part 2" />
-    <meta property="og:title" content="Thinking in coroutines in Node.js - Part 2" />
-    <meta property="twitter:title" content="Thinking in coroutines in Node.js - Part 2" />
+    <meta name="title" content="Improved Node.js logging for async code" />
+    <meta property="og:title" content="Improved Node.js logging for async code" />
+    <meta property="twitter:title" content="Improved Node.js logging for async code" />
     
 
     
@@ -37,7 +37,7 @@
     <meta name="keyword"  content="Engineer, Backend, Blockchain, Decentralized, Builder">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Thinking in coroutines in Node.js - Part 2-Dan Octavian blog</title>
+    <title>Improved Node.js logging for async code-Dan Octavian blog</title>
 
     <link rel="canonical" href="/2019/04/13/thinking-coroutines-nodejs-part2/">
 
@@ -181,8 +181,12 @@
                             logging
                         </a>
                         
+                        <a class="tag" href="/tags/blogpost" title="blogpost">
+                            blogpost
+                        </a>
+                        
                     </div>
-                    <h1>Thinking in coroutines in Node.js - Part 2</h1>
+                    <h1>Improved Node.js logging for async code</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
 			Posted by 
@@ -218,7 +222,7 @@
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#thinking-in-coroutines-in-node-js-part-2-logging">Thinking in coroutines in Node.js - Part 2: logging</a>
+<li><a href="#improved-node-js-logging-for-async-code">Improved Node.js logging for async code</a>
 <ul>
 <li><a href="#general-case">General case</a></li>
 <li><a href="#request-id-logging-in-express">Request id logging in Express</a></li>
@@ -228,25 +232,25 @@
                 
                 
 
-<h1 id="thinking-in-coroutines-in-node-js-part-2-logging">Thinking in coroutines in Node.js - Part 2: logging</h1>
+<h1 id="improved-node-js-logging-for-async-code">Improved Node.js logging for async code</h1>
 
-<p>We&rsquo;ve taken a look in <a href="http://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/">part 1</a> at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.</p>
+<p>We&rsquo;ve taken a look in <a href="http://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/">part 1</a> at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to  add to support logging ids for async calls in Node.js similar to getting the ID of the <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#currentThread()">current thread in Java</a>.</p>
 
-<p>The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same coroutine.</p>
+<p>The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same async call.</p>
 
 <h2 id="general-case">General case</h2>
 
 <p>Let&rsquo;s assume we have a function</p>
 
 <p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
-where <code>id</code> is the id of the coroutine that will show up in the logs and <code>f</code> is the coroutine function to be executed.</p>
+where <code>id</code> is the id of the async function execution that will show up in the logs and <code>f</code> is the async function to be executed.</p>
 
 <p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineRequestsWithLoggingRun.js">full code here</a></p>
 
 <pre><code>;(async () =&gt; {
   for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
 
-    // launch coroutine
+    // launch async call with logging id
     log.runWithContinuationId(`consumer${i}`, async () =&gt; {
       while (true) {
         try {
@@ -272,7 +276,7 @@ where <code>id</code> is the id of the coroutine that will show up in the logs a
 <pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
 </code></pre>
 
-<p>Which allows you to easily correlate all logs that happened within 1 coroutine. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
+<p>Which allows you to easily correlate all logs that happened within 1 async call. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
 
 <p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
 
@@ -428,14 +432,8 @@ module.exports = logger
                         
                         
                         
-                        <a href="/tags/javascript" title="Javascript">
-                            Javascript
-                        </a>
-                        
-                        
-                        
-                        <a href="/tags/node.js" title="Node.js">
-                            Node.js
+                        <a href="/tags/blogpost" title="blogpost">
+                            blogpost
                         </a>
                         
                         
@@ -451,6 +449,18 @@ module.exports = logger
                         </a>
                         
                         
+                        
+                        <a href="/tags/javascript" title="javascript">
+                            javascript
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/node.js" title="node.js">
+                            node.js
+                        </a>
                         
                         
                         
@@ -479,6 +489,7 @@ module.exports = logger
         </div>
     </div>
 </article>
+
 
 
 

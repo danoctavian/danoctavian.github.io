@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Dan Octavian</title>
@@ -12,20 +12,11 @@
     
     
     <item>
-      <title>Javascript</title>
-      <link>https://danoctavian.com/tags/javascript/</link>
+      <title>blogpost</title>
+      <link>https://danoctavian.com/tags/blogpost/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://danoctavian.com/tags/javascript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Node.js</title>
-      <link>https://danoctavian.com/tags/node.js/</link>
-      <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://danoctavian.com/tags/node.js/</guid>
+      <guid>https://danoctavian.com/tags/blogpost/</guid>
       <description></description>
     </item>
     
@@ -48,11 +39,29 @@
     </item>
     
     <item>
+      <title>Javascript</title>
+      <link>https://danoctavian.com/tags/javascript/</link>
+      <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://danoctavian.com/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>logging</title>
       <link>https://danoctavian.com/tags/logging/</link>
       <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://danoctavian.com/tags/logging/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Node.js</title>
+      <link>https://danoctavian.com/tags/node.js/</link>
+      <pubDate>Sat, 13 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://danoctavian.com/tags/node.js/</guid>
       <description></description>
     </item>
     

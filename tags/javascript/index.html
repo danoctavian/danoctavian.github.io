@@ -18,9 +18,9 @@
     
 
     
-    <meta name="title" content="" />
-    <meta property="og:title" content="" />
-    <meta property="twitter:title" content="" />
+    <meta name="title" content="Javascript" />
+    <meta property="og:title" content="Javascript" />
+    <meta property="twitter:title" content="Javascript" />
     
 
     
@@ -177,13 +177,12 @@
 <div class="post-preview">
     <a href="https://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/">
         <h2 class="post-title">
-            Thinking in coroutines in Node.js - Part 2
+            Improved Node.js logging for async code
         </h2>
 	
         <div class="post-content-preview">
 	
-            Thinking in coroutines in Node.js - Part 2: logging We&rsquo;ve taken a look in part 1 at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging for coroutines.
-The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same coroutine.
+            Improved Node.js logging for async code We&rsquo;ve taken a look in part 1 at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to add to support logging ids for async calls in Node.js similar to getting the ID of the current thread in Java.
        
         </div>
     </a>
@@ -235,14 +234,8 @@ The following simple approaches yield logs that allow us to correlate all loggin
              
             
                 
-                    <a href="/tags/javascript" title="Javascript">
-                        Javascript
-                    </a>
-                
-            
-                
-                    <a href="/tags/node.js" title="Node.js">
-                        Node.js
+                    <a href="/tags/blogpost" title="blogpost">
+                        blogpost
                     </a>
                 
             
@@ -258,6 +251,18 @@ The following simple approaches yield logs that allow us to correlate all loggin
                     </a>
                 
             
+                
+                    <a href="/tags/javascript" title="javascript">
+                        javascript
+                    </a>
+                
+            
+                
+            
+                
+                    <a href="/tags/node.js" title="node.js">
+                        node.js
+                    </a>
                 
             
                 
@@ -344,6 +349,7 @@ The following simple approaches yield logs that allow us to correlate all loggin
 
 	</div>
 </div>
+
 
 
 
