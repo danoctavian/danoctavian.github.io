@@ -18,9 +18,9 @@
     
 
     
-    <meta name="title" content="Improved Node.js logging for async code" />
-    <meta property="og:title" content="Improved Node.js logging for async code" />
-    <meta property="twitter:title" content="Improved Node.js logging for async code" />
+    <meta name="title" content="Saving time with property-based testing" />
+    <meta property="og:title" content="Saving time with property-based testing" />
+    <meta property="twitter:title" content="Saving time with property-based testing" />
     
 
     
@@ -37,9 +37,9 @@
     <meta name="keyword"  content="Engineer, Backend, Blockchain, Decentralized, Builder">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Improved Node.js logging for async code-Dan Octavian blog</title>
+    <title>Saving time with property-based testing-Dan Octavian blog</title>
 
-    <link rel="canonical" href="/2019/04/13/thinking-coroutines-nodejs-part2/">
+    <link rel="canonical" href="/2019/03/25/saving-time-property-based-testing/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -161,24 +161,20 @@
                             software
                         </a>
                         
-                        <a class="tag" href="/tags/node.js" title="Node.js">
-                            Node.js
-                        </a>
-                        
                         <a class="tag" href="/tags/javascript" title="Javascript">
                             Javascript
                         </a>
                         
-                        <a class="tag" href="/tags/concurrency" title="concurrency">
-                            concurrency
+                        <a class="tag" href="/tags/algorithms" title="algorithms">
+                            algorithms
                         </a>
                         
-                        <a class="tag" href="/tags/coroutine" title="coroutine">
-                            coroutine
+                        <a class="tag" href="/tags/leetcode" title="leetcode">
+                            leetcode
                         </a>
                         
-                        <a class="tag" href="/tags/logging" title="logging">
-                            logging
+                        <a class="tag" href="/tags/testing" title="testing">
+                            testing
                         </a>
                         
                         <a class="tag" href="/tags/blogpost" title="blogpost">
@@ -186,7 +182,7 @@
                         </a>
                         
                     </div>
-                    <h1>Improved Node.js logging for async code</h1>
+                    <h1>Saving time with property-based testing</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
 			Posted by 
@@ -194,7 +190,7 @@
 			    Dan Octavian
 			 
 			on 
-			Saturday, April 13, 2019
+			Saturday, January 4, 2020
                         
                     </span>
                 </div>
@@ -222,180 +218,130 @@
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#improved-node-js-logging-for-async-code">Improved Node.js logging for async code</a>
+<li><a href="#saving-time-with-property-based-testing">Saving time with property-based testing</a>
 <ul>
-<li><a href="#general-case">General case</a></li>
-<li><a href="#request-id-logging-in-express">Request id logging in Express</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#a-use-case-a-javascript-linked-list-for-code-challenges">A use-case: a Javascript linked-list for code challenges</a></li>
+<li><a href="#property-based-testing-easy-mode">Property-based testing - easy mode</a></li>
+<li><a href="#property-based-testing-spicing-things-up">Property-based testing - spicing things up</a></li>
+<li><a href="#conclusions">Conclusions</a></li>
 </ul></li>
 </ul>
 </nav>
                 
                 
 
-<h1 id="improved-node-js-logging-for-async-code">Improved Node.js logging for async code</h1>
+<h1 id="saving-time-with-property-based-testing">Saving time with property-based testing</h1>
 
-<p>We&rsquo;ve taken a look in <a href="http://danoctavian.com/2019/03/25/thinking-coroutines-nodejs/">part 1</a> at how we can reason about Node.js code in terms of coroutines to get better code structure and make use of concurrency constructs similar to those of Golang. In this part we will look at what we need to  add to support logging ids for async calls in Node.js similar to getting the ID of the <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#currentThread()">current thread in Java</a>.</p>
+<h2 id="introduction">Introduction</h2>
 
-<p>The following simple approaches yield logs that allow us to correlate all logging statements that happen within the context of the same async call.</p>
+<p>Writing tests takes a lot of time, but as our code grows, quality can become a concern and more and more bugs are likely to creep in, hence we can&rsquo;t put it off for much longer. Also, when implementing algorithms under tight time constraints such as an algorithm coding challenges, exhaustively thinking through all the edge cases can get tricky.</p>
 
-<h2 id="general-case">General case</h2>
+<p>In this article we will showcase how efficient is property-based testing in terms of saving your precious developer time when writing tests or come in handy when you need find bugs in record time, all by expressing our test cases in terms of properties to be verified, instead of typing out lots of concrete test cases.</p>
 
-<p>Let&rsquo;s assume we have a function</p>
+<h2 id="a-use-case-a-javascript-linked-list-for-code-challenges">A use-case: a Javascript linked-list for code challenges</h2>
 
-<p><code>runWithContinuationId(id: string, f: () =&gt; Promise&lt;any&gt;)</code>
-where <code>id</code> is the id of the async function execution that will show up in the logs and <code>f</code> is the async function to be executed.</p>
+<p>To do this we consider a useful case of a simple doubly-linked list implementation in Javascript with 0 dependencies that you can easily copy-paste in code-challenge type of environments (eg. <a href="https://leetcode.com/problemset/all/">leetcode</a>) if you are dealing with performance issues when using an standard Javascript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>.</p>
 
-<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineRequestsWithLoggingRun.js">full code here</a></p>
+<p>Firstly, why would you require a doubly-linked list implementation in Javascript when you have the built-in Array type? As illustrated well in this <a href="https://stackoverflow.com/questions/44031591/performance-of-array-push-vs-array-unshift">StackOverflow post</a>, if you are dealing with a large list of ordered elements, where you would like to attach items at both ends of the list, using the built-in Array type exhibits linear <code>O(N)</code> runtime complexity for <code>.shift()</code> method calls. This method call appends an element at the beginning of the array. Since the Array is represented as a contiguous region in memory, to make &ldquo;room&rdquo; for this new element requires re-allocation a new region in memory and copying all existing array items over.</p>
 
-<pre><code>;(async () =&gt; {
-  for (let i = 0; i &lt; MAX_CONCURRENT_REQUESTS; i++) {
+<p>This array implementation sensibly favors the <code>.push()</code>method call that pre-allocates more memory than needed to accommodate for the array growing in size through appends to its end. If, however you are implementing an algorithm where appending at the beginning of a list and at the end are both frequent operations and your list becomes very large (think 100k+ elements), the performance of <code>.shift()</code> can become a problem and you may need a Linked-List implementation to have a <code>O(1)</code> runtime complexity for both. This comes with the known trade-off that random access (eg. give me the element at position 11000) becomes a <code>O(N)</code> operation.</p>
 
-    // launch async call with logging id
-    log.runWithContinuationId(`consumer${i}`, async () =&gt; {
-      while (true) {
-        try {
-          log.info(`Looking for work..`)
-          const target = await asyncChan.read()
-          const prices = await fetchPrices(target.from, target.to)
-          console.log(`1 ${target.from} = ${JSON.stringify(prices)}`)
-          log.info(`Done processing target ${JSON.stringify(target)}`)
-        } catch (e) {
-          log.error(`Failed to process value with ${e.stack}`)
-        }
-      }
-    })
-  }
-})()
+<p>For the purpose of this article we implement a doubly linked list that has a minimalist implementation with 0 dependencies that you can easily reuse in code-challenge type of environments (if rules of the contest allow) in case your algorithm implementation presents the performance requirements outlined above. The implementation is a class called <code>DoublyLinkedList</code> can be found on <a href="https://github.com/danoctavian/algo-challenge-doubly-linked-list/blob/master/DoublyLinkedList.js">Github</a>, supporting a subset of methods of the <code>Array</code> type.</p>
+
+<h2 id="property-based-testing-easy-mode">Property-based testing - easy mode</h2>
+
+<p>Since the DoublyLinkedList has a subset of the interface of the javascript <code>Array</code> type which has the same <em>behavior</em> as the <code>Array</code> type (but not the same performance), while also being a piece of <em>pure</em> code and by <em>pure</em> we mean no I/O (input/output) is executed that can change results from run to run, it is a perfect candidate for property-based testing.</p>
+
+<p>We pick the <a href="https://github.com/jsverify/jsverify">jsverify</a> library for expressing properties and <a href="https://github.com/facebook/jest">jest</a> as a test framework.</p>
+
+<p>Here&rsquo;s how we can test that the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length"><code>length</code></a> property of the <code>DoublyLinkedList</code> is implemented correctly:</p>
+
+<pre><code>   jsc.property('has correct length', jsc.array(jsc.int32), arr =&gt; {
+     const list = new DoublyLinkedList(arr)
+     return lodash.isEqual(list.length, arr.length)
+   })
 </code></pre>
 
-<p>This will yield a log looking as such:</p>
+<p>This property is saying: given an array of arbitrary length with arbitrary elements of type <code>int32</code>, a list created from that array will have the same length as the array.</p>
 
-<pre><code>info: Looking for work.. {&quot;timestamp&quot;:&quot;2019-03-24 00:21:13&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
-</code></pre>
+<p>Behind the scenes, <code>jsverify</code> randomly generates many arrays with various elements and various lengths and tests for a return value of <code>true</code> and no exceptions thrown for each.</p>
 
-<pre><code>info: Done processing target {&quot;from&quot;:&quot;ETH&quot;,&quot;to&quot;:&quot;EUR,USD&quot;} {&quot;timestamp&quot;:&quot;2019-03-24 00:21:14&quot;,&quot;continuationId&quot;:&quot;consumer0&quot;}
-</code></pre>
+<p>Another easy one is the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes"><code>includes</code></a> method:</p>
 
-<p>Which allows you to easily correlate all logs that happened within 1 async call. This kind of identifier is common-place in logging libraries for other environments such as Java or Python, where the thread id can be easily added to the log entry, but for Node.js it needs a tad more boilerplate.</p>
-
-<p>Here&rsquo;s a a way to setup this to work with the winston logger. if no id is specified, it defaults to a randomly generated id as a <code>uuidv4</code>.</p>
-
-<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/coroutineLogging.js">full code here</a></p>
-
-<pre><code>const winston = require('winston')
-const getNamespace = require('cls-hooked').getNamespace
-const createNamespace = require('cls-hooked').createNamespace
-const uuidv4 = require('uuid/v4')
-
-const LOGGING_NAMESPACE_NAME = 'abb51eaa-749b-475c-9cba-8d7fa05b769f'
-const CONTINUATION_ID_VAR_NAME = 'continuationId'
-
-let loggingSession = getNamespace(LOGGING_NAMESPACE_NAME)
-if (!loggingSession) {
-  loggingSession = createNamespace(LOGGING_NAMESPACE_NAME)
-}
-
-function runWithContinuationId(value, f) {
-  if (!value) {
-    value = uuidv4()
-  }
-  let returnValue = null
-  loggingSession.run(() =&gt; {
-    loggingSession.set(CONTINUATION_ID_VAR_NAME, value)
-    returnValue = f()
+<pre><code>  jsc.property('check for includes', jsc.array(jsc.int8), jsc.array(jsc.int8), (arr, elemToCheck) =&gt; {
+    const list = new DoublyLinkedList(arr)
+    return list.includes(elemToCheck) === arr.includes(elemToCheck)
   })
-  return returnValue
-}
-
-const continuationIdFormat = winston.format((info, opts) =&gt; {
-  const continuationId = loggingSession.get(CONTINUATION_ID_VAR_NAME)
-  info.continuationId = continuationId
-  return info
-})
-
-const logger = winston.createLogger({
-  format: winston.format.combine(winston.format.json(), winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss'
-  }), continuationIdFormat()),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(winston.format.simple(), winston.format.timestamp({
-        format: 'YYYY-MM-DD HH:mm:ss'
-      }), continuationIdFormat()),
-      level: 'info',
-      handleExceptions: true
-    })
-  ],
-  exitOnError: false
-})
-
-logger.runWithContinuationId = runWithContinuationId
-module.exports = logger
 </code></pre>
 
-<p>The code above makes use of the library <a href="https://www.npmjs.com/package/cls-hooked"><code>cls-hooked</code></a> to ensure there is continuation local context passed from caller to callee starting at from the root function called with <code>runWithContinuationId</code>. This is akin to <a href="https://www.baeldung.com/java-threadlocal">ThreadLocal storage in Java</a>.</p>
+<p>This property says the given an arbitrary array of <code>int8</code> elements and and an arbitrary <code>int8</code> element to check for inclusion, the predicate <code>includes(elemToCheck)</code> is answered in the same way by both the <code>Array</code> and the list created from the same array.</p>
 
-<h2 id="request-id-logging-in-express">Request id logging in Express</h2>
+<h2 id="property-based-testing-spicing-things-up">Property-based testing - spicing things up</h2>
 
-<p>A more specific use case is the logging of a request id for each request handled by your web server, in this case if we are using the Express framework. Because the use case is more specific, we can take a simpler approach as such:</p>
+<p>We could move forward and write such tests for the other methods such as <code>shift</code> and <code>push</code>. However, in he real usage of the list, there is more likely going to be an arbitrary sequence of addition and removal operations at both ends of the list, after which integrity needs to be preserved. That is a more realistic scenario.</p>
 
-<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/expressLoggingDemoRun.js">full code here</a></p>
+<p>Let&rsquo;s see how we can do that with a property:</p>
 
-<pre><code>const express = require('express')
-const uuid = require('uuid')
-const httpContext = require('express-http-context')
-const log = require('./expressLogging')
-
-const app = express()
-
-app.use(httpContext.middleware)
-// Run the context for each request. Assign a unique identifier to each request
-app.use((req, res, next) =&gt; {
-  httpContext.set('reqId', uuid.v1())
-  next()
-})
-
-app.use('/hello/:name', async (req, res) =&gt; {
-  log.info(`Responding to hello from ${req.params.name}`)
-  res.json({hello: req.params.name})
-})
-
-const port = 3000
-app.listen(port)
+<pre><code>  jsc.property('supports arbitrary sequences of array mutation operations',
+    jsc.array(jsc.int8), jsc.array(arbitraryArrayOperations), (arr, operations) =&gt; {
+    arr = arr.slice(0, 100)
+    operations = operations.slice(0, 1000)
+    const list = new DoublyLinkedList(arr)
+    for (let i = 0; i &lt; operations.length; i++) {
+      const operation = operations[i]
+      const r1 = list[operation.op](operation.val)
+      const r2 = arr[operation.op](operation.val)
+      if (!lodash.isEqual(r1, r2) || !lodash.isEqual(list.toArray(), arr)) {
+        return false
+      }
+    }
+    return true
+  })
 </code></pre>
 
-<p>This yields a log such as:</p>
+<p>This property is saying that given an arbitrary sequence of 1000 operations which may have 0 or 1 parameters (<code>jsc.array(arbitraryArrayOperations)</code> ) and an arbitrary array, applying them to both the list and the array gives the same return value and the array and the list contain the same elements after each application.</p>
 
-<pre><code>info: Responding to hello from dan {&quot;timestamp&quot;:&quot;2019-04-13T07:40:15.889Z&quot;,&quot;reqId&quot;:&quot;60fd9900-5dbf-11e9-a413-5be45196053c&quot;}
-</code></pre>
+<p>An operation is a tuple <code>{ op, val }</code> where <code>op</code> is a method name (eg. <code>pop</code>) and <code>val</code> is a parameter to be passed into the method (may be <code>undefined</code>).</p>
 
-<p>To achieve this type of logging, we can make use of the <code>express-http-context</code> and <code>winston</code> libraries. Here&rsquo;s the implementation for the local <code>./expressLogging</code> module:</p>
+<p>We are effectively building our own arbitrary data generator here, since <code>jsverify</code> does not provide it out of the box. It goes likes this:</p>
 
-<p><a href="https://github.com/danoctavian/node-coroutine-utils/blob/master/examples/expressLogging.js">full code here</a></p>
-
-<pre><code>const httpContext = require('express-http-context')
-const winston = require('winston')
-
-const requestIdFormat = winston.format((info, opts) =&gt; {
-  const reqId = httpContext.get('reqId')
-  info.reqId = reqId
-  return info
+<pre><code>const arbitraryArrayOperations = jsc.bless({
+  generator: jsc.generator.bless(function () {
+    switch (jsc.random(0, 3)) {
+      case 0: return {
+        op: 'push',
+        val: jsc.random(0, 100)
+      }
+      case 1: return {
+        op: 'pop',
+      }
+      case 2: return {
+        op: 'shift'
+      }
+      case 3: return {
+        op: 'unshift',
+        val: jsc.random(0, 100)
+      }
+    }
+  })
 })
 
-const logger = winston.createLogger({
-  format: winston.format.combine(winston.format.simple(), winston.format.timestamp(), requestIdFormat()),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(winston.format.simple(), winston.format.timestamp()),
-      level: 'info',
-      handleExceptions: true
-    })
-  ],
-  exitOnError: false
-})
-
-module.exports = logger
 </code></pre>
+
+<p>This generates 1 of the 4 operations we are testing for (<code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>) with an accompanying concrete value for the <code>push</code> and <code>unshift</code> methods which add new elements.</p>
+
+<p>With this test and generator we capture relatively complex behaviour for 4 of the methods with a few tens of lines of code and in less than 30 minutes!</p>
+
+<p><strong>Beware</strong> though, it is essential that the properties you write are <strong>as strong as possible</strong>. If the properties are too weak they may leave hidden bugs. For example, the clause <code>lodash.isEqual(list.toArray(), arr)</code> being checked in the property above after every operation is essential. Leaving it out initially meant that the test was not capturing a situation where <code>next</code> pointer of the tail element of the List and and the <code>prev</code> pointer of the head of the list were not nullified when doing <code>pop</code> and <code>shift</code> as shown in <a href="https://github.com/danoctavian/algo-challenge-doubly-linked-list/commit/77e3d291d75e2015b6ee6dc45391e502f8f49521">this commit</a>.</p>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>We can see how when confronted with the a nearly &ldquo;ideal&rdquo; case, using property-based testing not only saves us developer time when writing the tests but also simplifies test code which saves developer time when reading a codebase.</p>
+
+<p>This approach can be very useful in code-challenge type of environments where, in most cases, I/O is absent and the evaluation has very thorough test cases that verify edge cases which you might accidentally omit given time limitations.</p>
+
+<p>However, real-world code is often times messier than we would wish, reducing the opportunity for easily defining properties that give us near perfect test coverage. A good approach here is to look for pieces of functionality that are complex enough to warrant their own function and attempt to construct more generic <em>pure</em> functions that encode the logic, which can potentially be re-used or just tested much easier.</p>
 
 
                 
@@ -404,15 +350,10 @@ module.exports = logger
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/03/25/thinking-coroutines-nodejs/" data-toggle="tooltip" data-placement="top" title="Applying Golang concepts in Node.js">&larr;
+                        <a href="/2019/04/13/thinking-coroutines-nodejs-part2/" data-toggle="tooltip" data-placement="top" title="Improved Node.js logging for async code">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/03/25/saving-time-property-based-testing/" data-toggle="tooltip" data-placement="top" title="Saving time with property-based testing">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>testing on Dan Octavian</title>
+    <link>https://danoctavian.com/tags/testing/</link>
+    <description>Recent content in testing on Dan Octavian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 04 Jan 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://danoctavian.com/tags/testing/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Saving time with property-based testing</title>
+      <link>https://danoctavian.com/2019/03/25/saving-time-property-based-testing/</link>
+      <pubDate>Sat, 04 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://danoctavian.com/2019/03/25/saving-time-property-based-testing/</guid>
+      <description>Saving time with property-based testing Introduction Writing tests takes a lot of time, but as our code grows, quality can become a concern and more and more bugs are likely to creep in, hence we can&amp;rsquo;t put it off for much longer. Also, when implementing algorithms under tight time constraints such as an algorithm coding challenges, exhaustively thinking through all the edge cases can get tricky.
+In this article we will showcase how efficient is property-based testing in terms of saving your precious developer time when writing tests or come in handy when you need find bugs in record time, all by expressing our test cases in terms of properties to be verified, instead of typing out lots of concrete test cases.</description>
+    </item>
+    
+  </channel>
+</rss>

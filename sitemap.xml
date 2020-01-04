@@ -3,8 +3,53 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://danoctavian.com/tags/algorithms/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://danoctavian.com/tags/blogpost/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/tags/javascript/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/tags/leetcode/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/post/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/2019/03/25/saving-time-property-based-testing/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/tags/software/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/tags/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://danoctavian.com/tags/testing/</loc>
+    <lastmod>2020-01-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -18,17 +63,7 @@
   </url>
   
   <url>
-    <loc>https://danoctavian.com/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://danoctavian.com/2019/04/13/thinking-coroutines-nodejs-part2/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://danoctavian.com/tags/javascript/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
   </url>
   
@@ -39,21 +74,6 @@
   
   <url>
     <loc>https://danoctavian.com/tags/node.js/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://danoctavian.com/post/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://danoctavian.com/tags/software/</loc>
-    <lastmod>2019-04-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://danoctavian.com/tags/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
   </url>
   
