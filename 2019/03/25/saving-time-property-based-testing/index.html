@@ -251,7 +251,7 @@
 
 <h2 id="property-based-testing-easy-mode">Property-based testing - easy mode</h2>
 
-<p>Since the DoublyLinkedList has a subset of the interface of the javascript <code>Array</code> type which has the same <em>behavior</em> as the <code>Array</code> type (but not the same performance), while also being a piece of <em>pure</em> code and by <em>pure</em> we mean no I/O (input/output) is executed that can change results from run to run, it is a perfect candidate for property-based testing.</p>
+<p>Since the DoublyLinkedList has a subset of the interface of the javascript <code>Array</code> type which has the same <em>behavior</em> as the <code>Array</code> type (but not the same performance), while also being a piece of <em>pure</em> code and by <em>pure</em> we mean no I/O (input/output) is executed that can change results from run to run, it is a perfect candidate for property-based testing. For full test code check out this <a href="https://github.com/danoctavian/algo-challenge-doubly-linked-list/blob/master/DoublyLinkedList.test.js">file on Github</a>.</p>
 
 <p>We pick the <a href="https://github.com/jsverify/jsverify">jsverify</a> library for expressing properties and <a href="https://github.com/facebook/jest">jest</a> as a test framework.</p>
 
@@ -338,6 +338,8 @@
 <h2 id="conclusions">Conclusions</h2>
 
 <p>We can see how when confronted with a nearly &ldquo;ideal&rdquo; case, using property-based testing not only saves us developer time when writing the tests but also simplifies test code which saves developer time when reading a codebase.</p>
+
+<p>For comparison purposes, the <a href="https://github.com/danoctavian/algo-challenge-doubly-linked-list/blob/master/DoublyLinkedList.test.js">test file</a> explained above also contains standard test cases with assertions (scroll down past the property-based block). We can see how we&rsquo;re letting <code>jsverify</code> do all that work of generating test cases for us, since the concrete tests written by hand can easily be generated automatically.</p>
 
 <p>This approach can be very useful in code-challenge type of environments where, in most cases, I/O is absent and the evaluation has very thorough test cases that verify edge cases which you might accidentally omit given time limitations.</p>
 
