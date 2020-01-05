@@ -18,7 +18,7 @@
       
       <guid>https://danoctavian.com/2019/03/25/saving-time-property-based-testing/</guid>
       <description>Saving time with property-based testing Introduction Writing tests takes a lot of time, but as our code grows, quality can become a concern and more and more bugs are likely to creep in, hence we can&amp;rsquo;t put it off for much longer. Also, when implementing algorithms under tight time constraints such as algorithm coding challenges, exhaustively thinking through all the edge cases can get tricky.
-In this article we will showcase how efficient is property-based testing in terms of saving your precious developer time when writing tests or come in handy when you need find bugs in record time, all by expressing our test cases in terms of properties to be verified, instead of typing out lots of concrete test cases.</description>
+In this article we will showcase how efficient is property-based testing in terms of saving your precious developer time when writing tests or come in handy when you need to find bugs in record time.</description>
     </item>
     
   </channel>
