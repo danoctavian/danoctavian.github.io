@@ -56,7 +56,7 @@ story = [
     p('EDUCATION', 'section'),
     p('<b>Imperial College London</b> · MEng Computing · First Class Honours<br/>October 2010 – June 2014'),
     p('CORE EXPERTISE', 'section'),
-    p('Engineering leadership · DeFi protocol architecture · Smart contract security<br/>'
+    p('Engineering leadership · DeFi protocol architecture · Solidity Smart contracts · Smart contract security<br/>'
       'Tokenized vaults &amp; yield strategies'),
     p('<b>Languages:</b> English (native fluency)'),
 ]
