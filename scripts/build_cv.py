@@ -37,7 +37,7 @@ story = [
         'Designed and built modular tokenized vault infrastructure for YieldNest MAX vaults, yield and restaking strategies, lending and liquidity pool integrations, and withdrawal and redemption mechanisms.',
         'Led the engineering team while remaining hands-on with Solidity development, security reviews, multichain deployments, and production operations.',
     ]),
-    role('Core Contributor | Nexus Mutual', 'May 2020 – Present', [
+    role('Core Contributor | Nexus Mutual', 'May 2020 – November 2023', [
         'Developed smart contracts and backend services enabling DeFi users to buy cover against smart contract hacks on Ethereum.',
         'Improved the staking mechanism, helping grow Total Locked Value 70× from seven figures to nine figures; launched the first tradable insurance product using NFTs and refined the Nexus Mutual V1 bonding curve.',
     ]),
