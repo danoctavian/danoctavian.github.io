@@ -33,7 +33,7 @@ story = [
     HRFlowable(width='100%', thickness=0.6, color=colors.HexColor('#daddd3')),
     p('EXPERIENCE', 'section'),
     role('CTO / Co-founder | YieldNest', 'January 2024 – Present', [
-        'Co-founded YieldNest and led protocol architecture and smart contract engineering for DeFi products that reached nine-figure Total Locked Value.',
+        'Co-founded YieldNest and led protocol architecture and smart contract engineering for DeFi products that reached over 100 million dollars in Total Locked Value.',
         'Designed and built modular tokenized vault infrastructure for YieldNest MAX vaults, yield and restaking strategies, lending and liquidity pool integrations, and withdrawal and redemption mechanisms.',
         'Led the engineering team while remaining hands-on with Solidity development, security reviews, multichain deployments, and production operations.',
     ]),
