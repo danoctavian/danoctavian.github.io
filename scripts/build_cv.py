@@ -34,8 +34,8 @@ story = [
     p('EXPERIENCE', 'section'),
     role('CTO / Co-founder | YieldNest', 'January 2024 – Present', [
         'Co-founded YieldNest and led protocol architecture and smart contract engineering for DeFi products that reached over 100 million dollars in Total Locked Value.',
-        'Designed and built modular tokenized vault infrastructure for YieldNest MAX vaults, yield and restaking strategies, lending and liquidity pool integrations, and withdrawal and redemption mechanisms.',
-        'Led the engineering team while remaining hands-on with Solidity development, security reviews, multichain deployments, and production operations.',
+        'Designed and built the modular tokenized vault infrastructure for the YieldNest on-chain vault stack, powering $100m+ AUM Defi strategy vaults and RWA vaults on Ethereum.',
+        'Built and led a team of 4 core engineers while remaining hands-on with Solidity smart contract development, security reviews and on-chain production operations.',
     ]),
     role('Core Contributor | Nexus Mutual', 'May 2020 – November 2023', [
         'Developed smart contracts and backend services enabling DeFi users to buy cover against smart contract hacks on Ethereum.',
